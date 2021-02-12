@@ -1,0 +1,2 @@
+# sample run command 
+python3 main.py ../../datasets/TartanAir/abandonedfactory_sample_P001/P001
