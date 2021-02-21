@@ -74,6 +74,14 @@ if __name__ == '__main__':
         for i in range(images_count):
             timestamp_val += 0.1
             timestamp_file.write(str(timestamp_val)+"\n")
+        print("[INFO] Timestamp file created successfully.")
+
+        # copy the yaml file beside the images folders
+        if os.path.isfile('tartanair.yaml'):
+            shutil.copyfile('tartanair.yaml', kitti_path+"/tartanair.yaml")
+            print("[INFO] YAML file copied successfully.")
+        else:
+            print("[Error] YAML file not found.")
 
 
 
