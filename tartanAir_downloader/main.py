@@ -25,23 +25,17 @@ def download_all_sequences(seq_mode, out_path):
         seq_name = line.rstrip('\n')
         print('\nSequence ', count, ' of ', total_seq, ' : ',  seq_name)
 
-        # for each sequence:
-        # --- (0) check if it was downloaded before
-        if os.path.exists(out_path+seq_name):
-            print('=> ', seq_name, ' Already exists.\n')
-        else:
-            # --- (1) download the sequence
-            download_seq(seq_name, seq_mode, out_path)
+        download_seq(seq_name, seq_mode, out_path)
 
-            # --- (2) Extract the file
-            print("---- Unzipping")
-            with zipfile.ZipFile(out_path+seq_name+'.zip', "r") as zip_ref:
-                zip_ref.extractall(out_path+seq_name)
-
-            # --- (3) Delete Downloaded files
-            print("---- Cleaning up !")
-            shutil.rmtree(out_path+seq_name)
-            os.remove(out_path+seq_name+'.zip')
+        # # --- (2) Extract the file
+        # print("---- Unzipping")
+        # with zipfile.ZipFile(out_path+seq_name+'.zip', "r") as zip_ref:
+        #     zip_ref.extractall(out_path+seq_name)
+        #
+        # # --- (3) Delete Downloaded files
+        # print("---- Cleaning up !")
+        # shutil.rmtree(out_path+seq_name)
+        # os.remove(out_path+seq_name+'.zip')
 
     print('------------------------------------')
 
@@ -51,8 +45,9 @@ def download_seq(seq_name, download_mode, out_path):
     print('======> Downloading:', seq_name)
 
     # create the directory for download
-    download_dir = out_path+'/'+seq_name
-    if ~os.path.exists(download_dir):
+    download_dir = out_path+seq_name
+
+    if not os.path.exists(download_dir):
         os.mkdir(download_dir)
 
     url_easy_left = "https://tartanair.blob.core.windows.net/tartanair-release1/" + seq_name + "/Easy/image_left.zip"
@@ -64,87 +59,69 @@ def download_seq(seq_name, download_mode, out_path):
         # easy sequences only
         # ================================================================================================
         # -- create the easy folder
-        if os.path.exists(download_dir+'/Easy'):
-            os.rmdir(download_dir+'/Easy')
-        os.mkdir(download_dir+'/Easy')
+        if not os.path.exists(download_dir+'/Easy'):
+            os.mkdir(download_dir+'/Easy')
 
-        print('=> Downloading', seq_name+ ' Easy - Left')
-        filename = wget.download(url_easy_left, download_dir+'/Easy/image_left.zip', bar=bar_custom)
-        print('=> Downloading', seq_name + ' Easy - Right')
-        filename = wget.download(url_easy_right, download_dir + '/Easy/image_right.zip', bar=bar_custom)
+        download_zip_file(seq_name, url_easy_left, download_dir, 'Easy', 'left')
+        download_zip_file(seq_name, url_easy_right, download_dir, 'Easy', 'right')
         print("\n----", seq_name+" easy seq. ", ' ==> Downloaded !')
-
-        print("---- Unzipping left images folder")
-        with zipfile.ZipFile(download_dir + '/Easy/image_left.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Easy/image_left')
-
-        print("---- Unzipping right images folder")
-        with zipfile.ZipFile(download_dir + '/Easy/image_right.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Easy/image_right')
 
     elif download_mode == 2:
         # hard sequences only
         # ================================================================================================
         # -- create the hard folder
-        if os.path.exists(download_dir + '/Hard'):
-            os.rmdir(download_dir + '/Hard')
-        os.mkdir(download_dir + '/Hard')
+        if not os.path.exists(download_dir + '/Hard'):
+            os.mkdir(download_dir + '/Hard')
 
-        print('=> Downloading', seq_name + ' Hard - Left')
-        filename = wget.download(url_hard_left, download_dir + '/Hard/image_left.zip', bar=bar_custom)
-        print('=> Downloading', seq_name + ' Hard - Right')
-        filename = wget.download(url_hard_right, download_dir + '/Hard/image_right.zip', bar=bar_custom)
+        download_zip_file(seq_name, url_hard_left, download_dir, 'Hard', 'left')
+        download_zip_file(seq_name, url_hard_right, download_dir, 'Hard', 'right')
         print("\n----", seq_name + " hard seq. ", ' ==> Downloaded !')
-
-        print("---- Unzipping left images folder")
-        with zipfile.ZipFile(download_dir + '/Hard/image_left.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Hard/image_left')
-
-        print("---- Unzipping right images folder")
-        with zipfile.ZipFile(download_dir + '/Hard/image_right.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Hard/image_right')
 
     else:
         # Both hard and easy sequences
         # ================================================================================================
         # -- create the easy folder
-        if os.path.exists(download_dir + '/Easy'):
-            os.rmdir(download_dir + '/Easy')
-        os.mkdir(download_dir + '/Easy')
+        if not os.path.exists(download_dir + '/Easy'):
+            os.mkdir(download_dir + '/Easy')
 
-        print('=> Downloading', seq_name + ' Easy - Left')
-        filename = wget.download(url_easy_left, download_dir + '/Easy/image_left.zip', bar=bar_custom)
-        print('=> Downloading', seq_name + ' Easy - Right')
-        filename = wget.download(url_easy_right, download_dir + '/Easy/image_right.zip', bar=bar_custom)
+        download_zip_file(seq_name, url_easy_left, download_dir, 'Easy', 'left')
+        download_zip_file(seq_name, url_easy_right, download_dir, 'Easy', 'right')
         print("\n----", seq_name + " easy seq. ", ' ==> Downloaded !')
-
-        print("---- Unzipping left images folder")
-        with zipfile.ZipFile(download_dir + '/Easy/image_left.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Easy/image_left')
-
-        print("---- Unzipping right images folder")
-        with zipfile.ZipFile(download_dir + '/Easy/image_right.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Easy/image_right')
 
         # ================================================================================================
         # -- create the hard folder
-        if os.path.exists(download_dir + '/Hard'):
-            os.rmdir(download_dir + '/Hard')
-        os.mkdir(download_dir + '/Hard')
+        if not os.path.exists(download_dir + '/Hard'):
+            os.mkdir(download_dir + '/Hard')
 
-        print('=> Downloading', seq_name + ' Hard - Left')
-        filename = wget.download(url_hard_left, download_dir + '/Hard/image_left.zip', bar=bar_custom)
-        print('=> Downloading', seq_name + ' Hard - Right')
-        filename = wget.download(url_hard_right, download_dir + '/Hard/image_right.zip', bar=bar_custom)
+        download_zip_file(seq_name, url_hard_left, download_dir, 'Hard', 'left')
+        download_zip_file(seq_name, url_hard_right, download_dir, 'Hard', 'right')
         print("\n----", seq_name + " hard seq. ", ' ==> Downloaded !')
 
-        print("---- Unzipping left images folder")
-        with zipfile.ZipFile(download_dir + '/Hard/image_left.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Hard/image_left')
 
-        print("---- Unzipping right images folder")
-        with zipfile.ZipFile(download_dir + '/Hard/image_right.zip', "r") as zip_ref:
-            zip_ref.extractall(download_dir + '/Hard/image_right')
+# ========================================================================================================
+def download_zip_file(m_seq_name, m_url, m_down_dir, m_level, m_camera):
+
+    print('\n=> Downloading', m_seq_name + ' '+m_level+' - '+m_camera)
+
+    # prepare the destination file names
+    dst_path = m_down_dir + '/'+m_level+'/image_'+m_camera+'.zip'
+    dst_folder = m_down_dir + '/'+m_level+'/image_'+m_camera
+
+    # check if file exists
+    if os.path.exists(dst_path):
+        print('\n=> Already Exists.')
+    else:
+        # download the file if doesn't exist
+        filename = wget.download(m_url, dst_path, bar=bar_custom)
+
+        # unzip the file after download is done
+        print("---- Unzipping left images folder")
+        with zipfile.ZipFile(dst_path, "r") as zip_ref:
+            zip_ref.extractall(dst_folder)
+
+        # delete the zipped file
+        print("---- Cleaning up !")
+        os.remove(dst_path)
 
 
 # ========================================================================================================
